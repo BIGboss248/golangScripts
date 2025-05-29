@@ -1,22 +1,7 @@
-$ go mod init {REMOTE}/{USERNAME}/{module name}
-after that we need to download the specified modules
-and list them in go.mod go dose that automaticlly by
-$ go mod tidy
-finaly we can run the program by
-$ go run <gofile>
-To generate a binary file
-$ go build <gofile>
-tip1 A package named main has an entrypoint at the main() function. A main package is compiled into an executable program.
-tip2 A package by any other name is a library package. Libraries have no entry point.
-tip3 Go programs are organized into packages. A package is a directory of Go code that's all compiled together. Functions, types, variables, and constants defined in one source file are visible to all other source files within the same package (directory).
-tip4 The go install command compiles and installs a package or packages on your local machine for your personal usage. It installs the package's compiled binary in the GOBIN directory.
-tip5 to import packages in other libaries you need to use the import statement with the followiing format => import "{REMOTE}/{USERNAME}/{module name}/path/to/package"
-$ go install
-*/
 /*
-This is a module for setting up logger and ansi colors for terminal output so i can use this in other projects
+Setup logger with zerolog and ansi colors for terminal output.
 */
-package main // import {REMOTE}/{USERNAME}/{module name}/main
+package AminLogger
 
 // import packages
 import (
@@ -51,10 +36,12 @@ const (
 	BgWhite   = "\033[47m"
 )
 
+//tip structs are a collection of variables that can be used to group related data together
+//tip structs can't be constants
 type AnsiColors struct {
-Reset string
+   Reset string
 Bold string
-// Forground Colors string
+// Forground Colors
 FgBlack string
 FgRed string
 FgGreen string
@@ -63,7 +50,7 @@ FgBlue string
 FgMagenta string
 FgCyan string
 FgWhite string
-// Background Colors string
+// Background Colors
 BgBlack string
 BgRed string
 BgGreen string
@@ -73,11 +60,11 @@ BgMagenta string
 BgCyan string
 BgWhite string
 }
-
-var Ansi AnsiColors = AnsiColors{
-Reset : "\033[0m",
+// Create a variable of the struct type
+var Ansi = AnsiColors{
+   Reset : "\033[0m",
 Bold  : "\033[1m",
-// Text Colors
+// Forground Colors
 FgBlack   : "\033[30m",
 FgRed	 : "\033[31m",
 FgGreen   : "\033[32m",
@@ -86,7 +73,7 @@ FgBlue	: "\033[34m",
 FgMagenta : "\033[35m",
 FgCyan	: "\033[36m",
 FgWhite   : "\033[37m",
-// Background Colors
+// Background Colors,
 BgBlack   : "\033[40m",
 BgRed	 : "\033[41m",
 BgGreen   : "\033[42m",
@@ -96,9 +83,6 @@ BgMagenta : "\033[45m",
 BgCyan	: "\033[46m",
 BgWhite   : "\033[47m",
 }
-
-
-var Logger zerolog.Logger = SetupLogger("app.log", zerolog.InfoLevel)
 
 /*
 SetupLogger initializes zerolog to write to both console and a file.
@@ -133,4 +117,19 @@ func SetupLogger(logFilePath string, logLevel zerolog.Level) (zerolog.Logger, er
 	log.Logger = logger
 
 	return logger, nil
+}
+
+// The function that will be executed
+func main() {
+logger, err := SetupLogger("app.log", zerolog.InfoLevel)
+startTime := time.Now() // Record start time
+if err != nil {
+panic(err)
+}
+logger.Info().Str("FunctionName:","main").Msg("Main function started")
+defer func() {
+logger.Info().Str("FunctionName:","main").TimeDiff("Duration (ms)", time.Now(), startTime).Msg("Main function ended.")
+}()
+	// Code here
+
 }
